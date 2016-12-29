@@ -2,6 +2,7 @@ package com.visellico.graphics.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,10 @@ public class UIPanel extends UIComponent implements Layer {
 	private List<UIComponent> components = new ArrayList<UIComponent>();
 	private List<UIFocusable> focusableComponents = new ArrayList<>();
 	
+	//TODO @devnote; we are fooling around with UI a lot and may, at some point, need to reconfigure each of these, like putting rect in UIComponent for instance.
+	//	If I had to redo this, I would be a lot more persnickety about it.
+	private Rectangle rect;
+	
 	public UIPanel(Vector2i position) {
 		super(position);
 		this.position = position;
@@ -31,12 +36,13 @@ public class UIPanel extends UIComponent implements Layer {
 		this.position = position;
 		this.size = size;
 		color = new Color(0xAACACACA, true);	//surely we can make this a parameter, somewhere. Also this is a default param.
+		rect = new Rectangle(position.x, position.y, size.x, size.y);
 	}
 	
 	public void add(UIComponent c) {
 		components.add(c);
-		c.init(this);
 		c.setOffset(position);	//Should only need to do this once, or whenever we update position. So I'm going to go ahead and add in a setPosition, that incorporates this, so I don't forget
+		c.init(this);
 	}
 	
 	public void addFocusable(UIFocusable c) {
@@ -78,14 +84,16 @@ public class UIPanel extends UIComponent implements Layer {
 	}
 	
 	public boolean onMouseMove(MouseMovedEvent e) {
+		
 		for (UIComponent component : components) {
 			if (component.onMouseMove(e))
 				return true;
 		}
+		if (rect.contains(e.getX(), e.getY()))
+			return true;
 		return false;
 	}
 	
-	public int increment;
 	/**
 	 * Distributes a keytyped event to the currently focused focusable component.
 	 * @param e The keypressed event to sent
@@ -117,7 +125,9 @@ public class UIPanel extends UIComponent implements Layer {
 	}
 
 	public void onEvent(Event event) {
+		
 		EventDispatcher dispatcher = new EventDispatcher(event);
+		
 		dispatcher.dispatch(Type.MOUSE_MOVED, (Event e) -> onMouseMove((MouseMovedEvent) e));
 		dispatcher.dispatch(Type.MOUSE_PRESSED, (Event e) -> onMousePress((MousePressedEvent) e));
 		dispatcher.dispatch(Type.MOUSE_RELEASED, (Event e) -> onMouseRelease((MouseReleasedEvent) e));

@@ -22,6 +22,7 @@ public class Font {
 	public Font() {
 	}
 	
+	@Deprecated
 	public void render(int x, int y, int kerning, int color, String text, Screen screen) {
 //		screen.renderFont();
 //		screen.renderSprite(50, 50, font_characters.getSprites()[0], false);
@@ -48,7 +49,7 @@ public class Font {
 			int index = charIndex.indexOf(currentChar);
 			if (index == -1) continue;
 			
-			screen.renderTextCharacter(x + xOffset, y + yOffset, characters[index], color, false);	//index is from the lookup table, so no need to adjust stuff. Really convenient actually. We choose values for the chars
+//			screen.renderTextCharacter(x + xOffset, y + yOffset, characters[index], color, false);	//index is from the lookup table, so no need to adjust stuff. Really convenient actually. We choose values for the chars
 			
 		}
 

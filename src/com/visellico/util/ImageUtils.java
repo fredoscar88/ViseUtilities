@@ -104,6 +104,30 @@ public class ImageUtils {
 		
 	}
 	
+	/**
+	 * 
+	 * @note not working
+	 * @param pixels
+	 */
+	public static void filterBlackWhite(int[] pixels) {
+		int newColor;
+		double average;
+		double r, g, b;
+		for (int i = 0; i < pixels.length; i++) {
+			r = pixels[i] & 0xFF0000;
+			g = pixels[i] & 0x00FF00;
+			b = pixels[i] & 0x0000FF;
+			average = Math.round((r * .21) + (g * .72) + (b * .07));
+			newColor = (int) average;
+			newColor <<= 4;
+			newColor |= (newColor << 2);
+			newColor |= newColor;
+			System.out.printf("%x", newColor);
+			System.out.println();
+			pixels[i] = newColor;
+		}
+	}
+	
 	public static BufferedImage loadImageFromFile(String path) {
 		
 		//It might be silly to create a reference and allocate memory that will just be trashed soon. TODO remove

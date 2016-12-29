@@ -77,12 +77,13 @@ public class UIButton extends UIComponent {
 	//I think I prefer my setOffset method, if only because I like the notion of SOME components containing others in unique ways, but I guess this is fine.
 	//	and in Button we still have access to the label after we add it, so that's cool I guess. yeah TheCherno's is probably bet.rar
 	public void init(UIPanel p) {
+		
 		super.init(p);
 		if (label != null) {
 			panel.add(label);
 		}
-		
-		rect = new Rectangle(getAbsolutePosition().x, getAbsolutePosition().y, size.x, size.y);
+//		rect = new Rectangle(getAbsolutePosition().x, getAbsolutePosition().y, size.x, size.y);
+		rect = new Rectangle(position.x + offset.x, position.y + offset.y, size.x, size.y);
 		
 		setColor(0xAAAAAA);
 		buttonListener = new UIButtonListener();

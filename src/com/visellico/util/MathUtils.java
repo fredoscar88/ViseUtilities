@@ -13,6 +13,11 @@ public class MathUtils {
 		return value > max ? value : max;
 	}
 	
+	public static double distance(double x1, double y1, double x2, double y2) {
+		double dist = Math.sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
+		return dist;
+	}
+	
 	/**
 	 * Returns the closest int from the given value inside of the range
 	 * @param value

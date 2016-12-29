@@ -2,17 +2,41 @@ package com.visellico.graphics;
 
 public class Sprite {
 
-	public final int SIZE;	//size of this sprite
+	public int spriteSize;	//size of this sprite
 	private int width, height;	//w,h of sprite when non-square (where SIZE would normally be both for square ones)
 	private int x,y;	//Coordinates of the sprite on the sprite sheet in gridsize
 	SpriteSheet sheet;	//sheet that this exists on
 	
 	public int[] pixels;	//may not need this to be public
 	
+	private Sprite() {
+	}
+	
+	/**
+	 * This is pretty hacky and terrible. See the TODO message inside for why.
+	 * Loads a sprite from a file- only png files are really supported but I think it could technically work with, well, anything.
+	 * @param path Path to the sprite file
+	 */
+	public Sprite(String path) {
+		
+		//TODO This is a butchered way of doing this, but..
+		//	I don't really want to copy image loading code into here. This sprite class was not built to do things that don't use spritesheets-
+		//	And here I am, loading assets by having each sprite be its own sheet. Not too bueno, so TODO: Rework this infrastructure to either use proper spriteshits or single sprite directories like we are currently using
+		SpriteSheet temp = new SpriteSheet(path);
+		sheet = temp;	//Important for how we load this.
+		width = sheet.width;
+		height = sheet.height;
+		spriteSize = width;
+		x = 0;
+		y = 0;
+		pixels = sheet.pixels;
+		load();
+		
+	}
 	
 	protected Sprite(SpriteSheet sheet, int width, int height) {
 		
-		this.SIZE = (width == height) ? width : -1;	//ternary operations! If square, SIZE is our new dimension. Else size is set to "unused"
+		this.spriteSize = (width == height) ? width : -1;	//ternary operations! If square, SIZE is our new dimension. Else size is set to "unused"
 		this.width = width;
 		this.height = height;
 		this.sheet = sheet;
@@ -20,12 +44,12 @@ public class Sprite {
 	
 	//Loads a sprite from the sprite sheet for the new sprite
 	public Sprite(int size, int x, int y, SpriteSheet sheet) {
-		this.SIZE = size;
+		this.spriteSize = size;
 		this.width = size;
 		this.height = size;
-		pixels = new int[SIZE*SIZE];
-		this.x = x * SIZE;	//the XY come as grid coordinates. The X and Y are not pixels, they are grid locations, and the locations are all 16x, so multiply
-		this.y = y * SIZE;	//each by 16 to get what the their pixel value would be.
+		pixels = new int[spriteSize*spriteSize];
+		this.x = x * spriteSize;	//the XY come as grid coordinates. The X and Y are not pixels, they are grid locations, and the locations are all 16x, so multiply
+		this.y = y * spriteSize;	//each by 16 to get what the their pixel value would be.
 		this.sheet = sheet;
 		load();
 		
@@ -33,7 +57,7 @@ public class Sprite {
 	
 	//loads a non-square sprite, of a specific color (like void sprite)
 	public Sprite(int w, int h, int color) {
-		this.SIZE = (w == h) ? w : -1;	//unused for non-square sprites, but generally used as a width
+		this.spriteSize = (w == h) ? w : -1;	//unused for non-square sprites, but generally used as a width
 		this.width = w;
 		this.height = h;
 		pixels = new int[width * height];
@@ -43,39 +67,13 @@ public class Sprite {
 	
 	//Uniformly colors the new sprite with one color
 	public Sprite(int size, int color) {	//color should be delivered as a hex value
-//		this.SIZE = size;
-//		this.width = size;
-//		this.height = size;
-//		pixels = new int[SIZE * SIZE];
-//		setColor(color);	//Colors the entire Sprite a uniform hexadecimal color
 		this(size, size, color);
 	}
 	
-	//Okay this works for the record, but it's not how TheCherno did it- he didnt create another sprite to be stored in memory like this does, he inverted
-	//	the sprite @render time which is what Im going to do, but I'll leave this method here. just in casies. Also proof for myself that I knew what to do. 
-	//	Even if I had to work it out on pen&paper
-	//Creates an a sprite inverted across the y axis (flips all x values)
-//	public Sprite(Sprite sprite) {
-//		this.SIZE = sprite.SIZE;
-//		
-//		this.pixels = new int[SIZE * SIZE];
-//		
-//		for (int y = 0; y < SIZE; y++) {
-//			for (int x = 0; x < SIZE; x++) {
-//				this.pixels[x + y * SIZE] = sprite.pixels[((SIZE - 1) - x) + y * SIZE];	//((axisOfInversion - x) + axisOfInversion)
-//			}
-//		}
-//		
-////		for (int i = 0; i < this.pixels.length; i++) {
-////			if (i % SIZE < axisOfInversion) {
-////				this.pixels[i] = sprite.pixels[(axisOfInversion - (i % SIZE)) + axisOfInversion];
-////			}
-////		}
-//		
-//	}
+
 	
 	public Sprite(int[] spritePixels, int width, int height) {
-		this.SIZE = (width == height) ? width : -1;
+		this.spriteSize = (width == height) ? width : -1;
 		this.width = width;
 		this.height = height;
 		pixels = spritePixels;
@@ -96,16 +94,9 @@ public class Sprite {
 		for (int yp = 0; yp < sheet.getHeight() / sheet.SPRITE_HEIGHT; yp++) {
 			for (int xp = 0; xp < sheet.getWidth() / sheet.SPRITE_WIDTH; xp++) {
 				//Sprite coords in sprite precision. Inside this loop looks at one sprite.
-																					//My mini novel
-				int pixels[] = new int[sheet.SPRITE_HEIGHT * sheet.SPRITE_WIDTH];	//pixels of a single sprite. THIS HAS TO BE IN THIS LEVEL OF THE LOOP NEST
-					//	why? it has to do with how java passes arrays. Otherwise the last cell of the font sheet is what every Sprite in pixels[] holds.
-					//	So what exactly happens? Every sprite is passed the SAME pixels[] array- or rather, pointers to the same array. Only one space in the heap is allocated 
-					//	to pixels[] when we instantiate it once, and every sprite, getting that reference, will be a different sprite but all use the same pixels- which is whatever happens
-					//	to be the last pixels read into the array.
-					//	This has to do with java's nature as PassByVal- but instead of passing a copy of the pixels[] array it passes a copy of the pointer to it. INB4 that is passbyref.
-					//	TL;DR pixels needs to be instantiated inside this loop
-					//	The alternative is to, in Sprite class, just copy the array over by declaring Sprite.pixels as a new array, and feeding it values. This way is easier. Or like System.arraycopy.
-					//		Actually we might use an alternative since this is creating a lot of unnecessary objects, but I guess it doesnt matter since they are almost immediately dereferenced and the GC should gettem
+																					
+				int pixels[] = new int[sheet.SPRITE_HEIGHT * sheet.SPRITE_WIDTH];	
+				
 				for (int y = 0; y < sheet.SPRITE_HEIGHT; y++) {
 					for (int x = 0; x < sheet.SPRITE_WIDTH; x++) {
 						//Pixel coords in a single sprite. also no, Im not going to use a getter method for SpriteSheet pixels. :V
@@ -122,42 +113,7 @@ public class Sprite {
 		
 		return sprites;
 	}
-	
-	/* failure tbh. I tried writing a spritesheet splitter. didnt work. :c Doesn't help that sometimes a lot of this stuff isnt commented well..
-	public static Sprite[] split(SpriteSheet sheet, int spriteW, int spriteH) {
 		
-		int height = sheet.HEIGHT;	//pixel precision
-		int width = sheet.WIDTH;
-		
-		int w = (height * spriteH);	//pixel precision
-		int h = (width * spriteW);	//pixel precision
-		
-		int sheetHeight = height / spriteH;
-		int sheetWidth = width / spriteW;
-		
-		Sprite[] result = new Sprite[sheetWidth * sheetHeight];
-		
-		int frame = 0;
-		for (int y = 0; y < sheetHeight; y++) {
-			for (int x = 0; x < sheetWidth; x++) {
-				//one sprite
-				int[] spritePixels = new int[spriteW*spriteH];
-				
-				for (int yy = 0; yy < spriteH; yy++) {
-					for (int xx = 0; xx < spriteW; xx++) {
-						//A pixel in the sprite
-						spritePixels[x + y * spriteW] = sheet.pixels[(xx + x * spriteW) + (yy + y * spriteH) * width];
-					}
-				}
-				result[frame++] = new Sprite(spritePixels, spriteW, spriteH);
-			}
-		}
-		
-		return result;
-		
-	}
-*/
-	
 	public static Sprite rotate(Sprite sprite, double angle) {
 		
 		//can use private fields because we are in the class in which they're declared :I
@@ -196,6 +152,37 @@ public class Sprite {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Flips a sprite
+	 */
+	public Sprite yFlip() {
+		
+		Sprite newSprite = copy();
+		
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				newSprite.pixels[x + y * width] = pixels[x + (width - 1 - y) * width];
+			}
+		}
+		
+		return newSprite;
+		
+	}
+	
+	//TODO TBH could just override the clone method here
+	public Sprite copy() {
+		
+		Sprite newSprite = new Sprite();
+		
+		newSprite.height = height;
+		newSprite.width = width;
+//		newSprite.x = x;
+//		newSprite.y = y;
+		newSprite.pixels = new int[width * height];
+		
+		return newSprite;
 	}
 	
 	/**
@@ -262,13 +249,10 @@ public class Sprite {
 		
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				
 				//"coordinate" stuff similar to what we find in Screen for drawing
-				pixels [x+y*SIZE] = sheet.pixels[(x+this.x) + (y + this.y)*sheet.WIDTH];
-				
+				pixels [x+y*spriteSize] = sheet.pixels[(x+this.x) + (y + this.y)*sheet.sWidth];		
 			}
 		}
-		
 		
 	}
 	

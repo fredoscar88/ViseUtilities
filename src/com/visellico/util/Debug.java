@@ -5,6 +5,9 @@ import com.visellico.graphics.Screen;
 
 public class Debug {
 	
+	
+	public static int objectsRendered = -1;	//All the items that are attempting to be rendered each frame
+	
 	//Static class- this class can never be instantiated
 	private Debug() {
 	}

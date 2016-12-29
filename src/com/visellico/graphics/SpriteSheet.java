@@ -10,7 +10,7 @@ public class SpriteSheet {
 
 	private String path;	//path to this spritesheet
 	public final int SIZE;	//sprite sheet is square, so only one dimension is needed. LOL now we have two dimensions, bitches
-	public final int WIDTH, HEIGHT;	//I guess these are in sprite precision... oh no, it's the width and height of each SPRITE. This is why my method split() in Sprite messed up... (todo)
+	public int sWidth, sHeight;	//I guess these are in sprite precision... oh no, it's the width and height of each SPRITE. This is why my method split() in Sprite messed up... (todo)
 						//well nope. SPRITEWIDTH and SPRITEHEIGHT are definitely NOT sprite width, sprite height.
 	public final int SPRITE_WIDTH = 16, SPRITE_HEIGHT = 16;
 	public int width, height;	//w and h of the actual sprite sheet
@@ -37,6 +37,7 @@ public class SpriteSheet {
 	private Sprite[] sprites;
 	
 	//create sheet from another sheet (sub sheet)
+	@Deprecated
 	public SpriteSheet(SpriteSheet sheet, int x, int y, int width, int height, int spriteSize) {	//may not need spriteSize parameter
 		
 		//PUTS X, Y, WIDTH, HEIGHT in PIXEL PRECISION from what we're given, SPRITE PRECISION;
@@ -48,10 +49,10 @@ public class SpriteSheet {
 		if (w == h) SIZE = w;
 		else SIZE = -1;
 		
-		this.WIDTH = w;
-		this.HEIGHT = h;
+		this.sWidth = w;
+		this.sHeight = h;
 		
-		pixels = new int[WIDTH * HEIGHT];
+		pixels = new int[sWidth * sHeight];
 //		System.out.println("h: " + h + ", ");
 		
 		for (int y0 = 0; y0 < h; y0++) {
@@ -60,7 +61,7 @@ public class SpriteSheet {
 				int xp = xx + x0;
 				
 				//may be redundant if we also store the sprites in the sprites array
-				pixels[x0 + y0 * w] = sheet.pixels[xp + yp * sheet.WIDTH];
+				pixels[x0 + y0 * w] = sheet.pixels[xp + yp * sheet.sWidth];
 			}
 		}
 		
@@ -73,7 +74,7 @@ public class SpriteSheet {
 				
 				for ( int y0 = 0; y0 < spriteSize; y0++) {
 					for (int x0 = 0; x0 < spriteSize; x0++) {
-						spritePixels[x0 + y0 * spriteSize] = pixels[(x0 + xa * spriteSize) + (y0 + ya * spriteSize) * WIDTH];	//(TO-DO) Take some time to understand.
+						spritePixels[x0 + y0 * spriteSize] = pixels[(x0 + xa * spriteSize) + (y0 + ya * spriteSize) * sWidth];	//(TO-DO) Take some time to understand.
 						/*
 						 * Here we are, for every sprite in a (sub) spritesheet, since this is the only constructor that supports what we're doing, (height,width in sprite precision),
 						 * populate an array of pixels that will be used to create a new sprite. add new sprite to sprites[] array.
@@ -98,23 +99,39 @@ public class SpriteSheet {
 		
 	}
 	
+	@Deprecated
 	public SpriteSheet(String path, int size) {
 		this.path = path;
 		this.SIZE = size;	//does this work?? apparently- it can only be initialized once, doesnt have to be at compile time, note that this is in the constructor
-		this.WIDTH = SIZE;
-		this.HEIGHT = SIZE;
+		this.sWidth = SIZE;
+		this.sHeight = SIZE;
 		
 		pixels = new int[SIZE*SIZE];
 		load();
 	}
 	
+	@Deprecated
 	public SpriteSheet(String path, int width, int height) {
 		this.path = path;
-		this.WIDTH = width;
-		this.HEIGHT = height;
+		this.sWidth = width;
+		this.sHeight = height;
 		this.SIZE = -1;	//unused for nonsquare
 		
 		pixels = new int[width * height];
+		load();
+	}
+	
+	/**
+	 * Currently the only supported constructor for this particular game. Likely, ViseUtilities as a whole needs to be redone
+	 * in a separate project. What this does is loads a sprite sheet from a file that contains only one sprite, that takes up the whole sheet. yeah.
+	 * Makes this whole class useless but whatever.
+	 * Doesn't jive with my architecture, so TODO git fixed
+	 * @param path Path to the sprite
+	 */
+	public SpriteSheet(String path) {
+		SIZE = -1;
+		this.path = path;
+		
 		load();
 	}
 	
@@ -148,6 +165,13 @@ public class SpriteSheet {
 			System.out.println(" succeeded!");
 			width = image.getWidth();
 			height = image.getHeight();
+			
+			//NB THESE THREE STATEMENTS BREAKS COMPATIBILITY WITH OTHER RAINE STUFF
+			//Frankly this should be here ANYWAY but meh
+				pixels = new int[width * height];
+				sWidth = width;
+				sHeight = height;
+				
 			image.getRGB(0, 0, width, height, pixels, 0, width);
 			
 		} catch (IOException e) {

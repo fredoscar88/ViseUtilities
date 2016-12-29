@@ -34,6 +34,10 @@ public class Physics {
 	}
 
 	//When no more acceleration is applied.
+	/**
+	 * Gently brings velocity to 0, using half of the acceleration.
+	 * Disclaimer I believe the current implementation is flawed.
+	 */
 	public void halt() {
 		// "Deceleration" is half that of acceleration- Makes it less abrupt, the parabola gets wider as time goes on.
 		if (velocity/acceleration > 0) acceleration = -(acceleration / 2);

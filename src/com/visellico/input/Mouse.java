@@ -3,6 +3,8 @@ package com.visellico.input;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import com.farr.Events.Event;
 import com.farr.Events.EventListener;
@@ -10,7 +12,7 @@ import com.farr.Events.types.MouseMovedEvent;
 import com.farr.Events.types.MousePressedEvent;
 import com.farr.Events.types.MouseReleasedEvent;
 
-public class Mouse implements MouseListener, MouseMotionListener {
+public class Mouse implements MouseListener, MouseMotionListener, MouseWheelListener {
 
 	private static int mouseX = -1;
 	private static int mouseY = -1;
@@ -71,7 +73,6 @@ public class Mouse implements MouseListener, MouseMotionListener {
 	 * Unused
 	 */
 	public void mouseEntered(MouseEvent e) {
-		
 	}
 	
 	/**
@@ -79,6 +80,13 @@ public class Mouse implements MouseListener, MouseMotionListener {
 	 */
 	public void mouseExited(MouseEvent e) {
 		
+	}
+
+	/**
+	 * Unused?
+	 */
+	public void mouseWheelMoved(MouseWheelEvent e) {
+//		System.out.print(e.getWheelRotation());
 	}
 
 }
