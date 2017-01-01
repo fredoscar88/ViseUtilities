@@ -12,7 +12,7 @@ public class UISprite extends UIComponent {
 	//	could uise it to render sprites in hi-res I guess, or well, scaled down but as a g.drawimage thingy, ya know ya know? Like what we literally do for our engine
 	
 	public UISprite(Vector2i position, Sprite sprite) {
-		super(position);
+		super(position, new Vector2i(sprite.getWidth(), sprite.getHeight()));
 		this.sprite = sprite;
 	}
 	

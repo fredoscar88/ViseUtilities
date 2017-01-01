@@ -43,7 +43,7 @@ public class UITextField extends UIComponent implements UIFocusable {
 	 */
 	public UITextField(Vector2i position, int width, String displayWhenEmpty) {
 				
-		super(position);
+		super(position, new Vector2i(0,0));
 		this.size = new Vector2i(width, font.getSize() + 3 * yMargin);
 		this.displayWhenEmpty = displayWhenEmpty;
 	}
@@ -52,9 +52,13 @@ public class UITextField extends UIComponent implements UIFocusable {
 		return enteredText;
 	}
 	
+	public void setText(String text) {
+		enteredText = text;
+		if (fontMetrics != null) cursorOffset = fontMetrics.stringWidth(enteredText);	//Reset cursor
+	}
+	
 	public boolean onMousePress(MousePressedEvent e) {
 		if (rect.contains(new Point(e.getX(), e.getY()))) {
-			
 			panel.setFocus(this);
 			
 			return true;
@@ -92,6 +96,7 @@ public class UITextField extends UIComponent implements UIFocusable {
 	
 	//TODO render the string so that if we exceed a certain length, likely determined by the width of the text box, it will render it so that the string appears to move left.
 	public void render(Graphics g) {
+		g.setFont(font);
 		if (this.g == null) this.g = g;
 		int x = position.x + offset.x;
 		int y = position.y + offset.y;
@@ -100,7 +105,6 @@ public class UITextField extends UIComponent implements UIFocusable {
 		g.fillRect(x, y, size.x, size.y);
 		
 		g.setColor(textColor);
-		g.setFont(font);
 		String drawString;// = getFocused() ? displayWhenEmpty : enteredText;
 		
 		if (!getFocused() && enteredText.equals("")) {

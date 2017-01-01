@@ -1,5 +1,7 @@
 package com.visellico.graphics;
 
+import java.io.IOException;
+
 public class Sprite {
 
 	public int spriteSize;	//size of this sprite
@@ -16,8 +18,9 @@ public class Sprite {
 	 * This is pretty hacky and terrible. See the TODO message inside for why.
 	 * Loads a sprite from a file- only png files are really supported but I think it could technically work with, well, anything.
 	 * @param path Path to the sprite file
+	 * @throws IOException 
 	 */
-	public Sprite(String path) {
+	public Sprite(String path) throws IOException {
 		
 		//TODO This is a butchered way of doing this, but..
 		//	I don't really want to copy image loading code into here. This sprite class was not built to do things that don't use spritesheets-

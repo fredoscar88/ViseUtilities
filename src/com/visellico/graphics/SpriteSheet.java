@@ -1,6 +1,7 @@
 package com.visellico.graphics;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -127,12 +128,13 @@ public class SpriteSheet {
 	 * Makes this whole class useless but whatever.
 	 * Doesn't jive with my architecture, so TODO git fixed
 	 * @param path Path to the sprite
+	 * @throws IOException 
 	 */
-	public SpriteSheet(String path) {
+	public SpriteSheet(String path) throws IOException {
 		SIZE = -1;
 		this.path = path;
 		
-		load();
+		loadNotPath();
 	}
 	
 	public Sprite[] getSprites() {
@@ -151,7 +153,9 @@ public class SpriteSheet {
 	private void load() {
 		
 		try {
-			System.out.print("Trying to load: " + path);
+			System.out.print("DEBUG SpriteSheet.load() - Trying to load: " + path);
+//			path = path.substring(1, path.length());
+//			System.out.println("\n" + path);
 											/*
 											 * In my interpretation, class.getResource() is for loading a resource into a memory cache
 											 * okay, great lost my train of thought.
@@ -161,6 +165,10 @@ public class SpriteSheet {
 											 * Specifically, Im guessing, relative to SpriteSheet- or well, the whole project, I dont know why SpriteSheet was specifically invoked
 											 */
 			BufferedImage image = ImageIO.read(SpriteSheet.class.getResource(path));	//whew (TO-DO) get understood; ep 19 of TheCherno. ~9-10 min mark
+			
+		
+			
+			
 			//Buffered Image loads the alpha channel, too
 			System.out.println(" succeeded!");
 			width = image.getWidth();
@@ -178,6 +186,30 @@ public class SpriteSheet {
 			e.printStackTrace();
 			System.err.println(" failed!");
 		}	//could do a finally to do our println since we lack that 'ln' up top
+		
+	}
+	
+	private void loadNotPath() throws IOException {
+		
+//		path = System.getProperty("user.dir") + path;
+		
+//		System.out.print("DEBUG SpriteSheet.load() - Trying to load: " + path);
+
+		
+		BufferedImage image = ImageIO.read(new File(path));
+
+		//Buffered Image loads the alpha channel, too
+//		System.out.println(" succeeded!");
+		width = image.getWidth();
+		height = image.getHeight();
+		
+		//NB THESE THREE STATEMENTS BREAKS COMPATIBILITY WITH OTHER RAINE STUFF
+		//Frankly this should be here ANYWAY but meh
+		pixels = new int[width * height];
+		sWidth = width;
+		sHeight = height;
+			
+		image.getRGB(0, 0, width, height, pixels, 0, width);
 		
 	}
 

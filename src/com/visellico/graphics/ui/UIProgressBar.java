@@ -22,7 +22,7 @@ public class UIProgressBar extends UIComponent {
 	
 	
 	public UIProgressBar(Vector2i position, Vector2i size, double progress) {
-		super(position);
+		super(position, new Vector2i(0,0));
 		this.size = size;
 		
 		this.progress = progress;

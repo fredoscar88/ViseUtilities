@@ -46,7 +46,7 @@ public class UIPromptOption implements Layer {
 		displayRegion = new UIPanel(new Vector2i(screenCover.size.x / 2 - 250, screenCover.size.y / 2 - 50), new Vector2i(500, responsesLength * BUTTON_HEIGHT + 80));
 		displayRegion.setColor(0x55BAE8);
 		
-		lblQuery = new UILabel(new Vector2i(10,30), query);
+		lblQuery = new UILabel(new Vector2i(10,10), query);
 		
 		displayRegion.add(lblQuery);
 		
@@ -57,7 +57,7 @@ public class UIPromptOption implements Layer {
 			
 		for (int i = 0; i < responsesLength; i++) {
 			final int index = i;
-			displayRegion.add(new UIButton(new Vector2i(30, i*(BUTTON_HEIGHT + MARGIN) + 40), new Vector2i(BUTTON_WIDTH, BUTTON_HEIGHT), () -> {value = index; System.out.println(value);}, responses[i]));
+			displayRegion.add(new UIButton(new Vector2i(30, i*(BUTTON_HEIGHT + MARGIN) + 50), new Vector2i(BUTTON_WIDTH, BUTTON_HEIGHT), () -> {value = index;}, responses[i]));
 		}
 		
 		
@@ -74,12 +74,10 @@ public class UIPromptOption implements Layer {
 	}
 	
 	public int awaitResponse() {
-		System.out.println("I get the feeling this isnt run at all");
 		parentList.add(this);
 		while (value == -1) {
 //			System.out.println(value);
 		}
-		System.out.println("very good");
 		remove();
 		return value;
 	}
@@ -94,9 +92,7 @@ public class UIPromptOption implements Layer {
 	}
 
 	public void onEvent(Event event) {
-		
-		
-		
+			
 		EventDispatcher dispatcher = new EventDispatcher(event);
 		displayRegion.onEvent(event);
 //		dispatcher.dispatch(Event.Type.MOUSE_RELEASED, (Event e) -> onMouseRelease((MouseReleasedEvent) e));

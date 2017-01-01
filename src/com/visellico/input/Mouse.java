@@ -11,12 +11,14 @@ import com.farr.Events.EventListener;
 import com.farr.Events.types.MouseMovedEvent;
 import com.farr.Events.types.MousePressedEvent;
 import com.farr.Events.types.MouseReleasedEvent;
+import com.farr.Events.types.MouseScrollEvent;
 
 public class Mouse implements MouseListener, MouseMotionListener, MouseWheelListener {
 
 	private static int mouseX = -1;
 	private static int mouseY = -1;
 	private static int mouseB = -1;	//button
+	private static int mouseRot = 0;
 	
 	private EventListener eventListener;
 	
@@ -62,6 +64,12 @@ public class Mouse implements MouseListener, MouseMotionListener, MouseWheelList
 		eventListener.onEvent(event);
 	}
 	
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		mouseRot = e.getWheelRotation();
+		Event event = new MouseScrollEvent(e.getX(), e.getY(), mouseRot);
+		eventListener.onEvent(event);
+	}
+	
 	/**
 	 * Unused
 	 */
@@ -80,13 +88,6 @@ public class Mouse implements MouseListener, MouseMotionListener, MouseWheelList
 	 */
 	public void mouseExited(MouseEvent e) {
 		
-	}
-
-	/**
-	 * Unused?
-	 */
-	public void mouseWheelMoved(MouseWheelEvent e) {
-//		System.out.print(e.getWheelRotation());
 	}
 
 }

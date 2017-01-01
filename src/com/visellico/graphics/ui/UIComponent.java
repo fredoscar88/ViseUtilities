@@ -7,11 +7,14 @@ import com.farr.Events.types.KeyTypedEvent;
 import com.farr.Events.types.MouseMovedEvent;
 import com.farr.Events.types.MousePressedEvent;
 import com.farr.Events.types.MouseReleasedEvent;
+import com.farr.Events.types.MouseScrollEvent;
 import com.visellico.util.Vector2i;
 
+//TODO need to cement that "actionable" part of UIComponents. Things like UISCrollLists and UIPanels should implement UIActionListener, then distribute the Action to their components
 public class UIComponent {
 
 	public Vector2i position, size;
+//	public Vector2i renderPos;	//In case this needs to be modified by a render object
 	
 	protected Vector2i offset;
 	protected Color color;
@@ -23,11 +26,11 @@ public class UIComponent {
 	
 	boolean active;
 	
-	public UIComponent(Vector2i position) {
-		this.position = position;
-		offset = new Vector2i();
-		color = new Color(0xFF00FF);
-	}	
+//	public UIComponent(Vector2i position) {
+//		this.position = position;
+//		offset = new Vector2i();
+//		color = new Color(0xFF00FF);
+//	}	
 	
 	public UIComponent(Vector2i position, Vector2i size) {
 		this.position = position;
@@ -56,6 +59,11 @@ public class UIComponent {
 	 */
 	public UIComponent setColor(int rgb) {
 		color = new Color(rgb);
+		return this;
+	}
+	
+	public UIComponent setColor(int rgba, boolean alpha) {
+		color = new Color(rgba, alpha);
 		return this;
 	}
 	
@@ -88,6 +96,10 @@ public class UIComponent {
 	}
 	
 	public boolean onMouseMove(MouseMovedEvent e) {
+		return false;
+	}
+	
+	public boolean onMouseScroll(MouseScrollEvent e) {
 		return false;
 	}
 	

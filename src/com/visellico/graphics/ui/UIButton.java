@@ -46,8 +46,9 @@ public class UIButton extends UIComponent {
 		super(position, size);
 		this.actionListener = actionListener;
 		Vector2i lp = new Vector2i(position);
+		//TODO This padding is killing me :'(((
 		lp.x += 4;
-		lp.y += 25;
+		lp.y += 4;
 		
 		//TODO center label on button
 		label = (UILabel) new UILabel(new Vector2i(lp), text);//.setColor(0);
