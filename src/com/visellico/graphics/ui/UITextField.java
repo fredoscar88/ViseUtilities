@@ -48,6 +48,12 @@ public class UITextField extends UIComponent implements UIFocusable {
 		this.displayWhenEmpty = displayWhenEmpty;
 	}
 	
+	public UITextField setFont(Font font) {
+		this.font = font;
+		this.size = new Vector2i(this.size.x, font.getSize() + 3 * yMargin);
+		return this;
+	}
+	
 	public String getText() {
 		return enteredText;
 	}
@@ -135,6 +141,10 @@ public class UITextField extends UIComponent implements UIFocusable {
 		focused = false;
 	}
 	public void giveFocus() {
+		if (this.g != null && fontMetrics == null)
+			fontMetrics = g.getFontMetrics(font);			
+		if (enteredText != null) 
+			cursorOffset = fontMetrics.stringWidth(enteredText);
 		focused = true;
 	}
 	

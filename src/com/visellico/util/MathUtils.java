@@ -18,6 +18,17 @@ public class MathUtils {
 		return dist;
 	}
 	
+	public static int parseInt(String str) {
+		
+		//Regex is basically magic
+		
+		if (str.matches("(-?[0-9]+)")) {
+			return Integer.parseInt(str);
+		}
+		
+		return 0;
+	}
+	
 	/**
 	 * Returns the closest int from the given value inside of the range
 	 * @param value

@@ -61,6 +61,13 @@ public class UIPanel extends UIComponent implements Layer {
 		}
 	}
 	
+	public void clearAllFocus() {
+		for (UIComponent c : components) {
+			if (c instanceof UIPanel) ((UIPanel) c).clearAllFocus();
+			if (c instanceof UIFocusable) ((UIFocusable) c).removeFocus();
+		}
+	}
+	
 	public void setPosition(Vector2i position) {
 		this.position = position;
 		for (UIComponent component : components) {	//Hey now we're thinking like programmers
@@ -77,6 +84,10 @@ public class UIPanel extends UIComponent implements Layer {
 		super.setColor(rgba, alpha);
 //		this.color = new Color(rgba, true);
 		return this;
+	}
+	
+	public Color getColor() {
+		return this.color;
 	}
 	
 	public boolean onMousePress(MousePressedEvent e) {
@@ -122,6 +133,10 @@ public class UIPanel extends UIComponent implements Layer {
 	 * @param e The keypressed event to sent
 	 */
 	public boolean onKeyType(KeyTypedEvent e) {
+		
+//		System.out.printf("%04X\n", (short) e.getKeyChar());
+		
+		
 		for (UIFocusable focusable : focusableComponents) {
 			if (!focusable.getFocused()) continue;
 			if (focusable.onKeyType(e))
